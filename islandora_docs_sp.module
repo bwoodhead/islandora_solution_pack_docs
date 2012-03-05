@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * @file
+ * Islandora docs solution pack module
+ */
+define('ISLANDORA_SP_TITLE', 'Islandora Documents Solution Pack');
+define('ISLANDORA_SP_MODULE_NAME', 'islandora_docs_sp');
+
+define('ISLANDORA_SP_MODS_FORM_NAME', 'Islandora Docs MODS Form');
+define('ISLANDORA_SP_MODS_FORM_FILE', 'xml/mods_article.xml');
+
+define('ISLANDORA_SP_CONTENT_MODEL_TITLE', 'Islandora Document Content Model');
+define('ISLANDORA_SP_CONTENT_MODEL', 'docs_sp_cm');
+define('ISLANDORA_SP_CONTENT_MODEL_FILE', 'xml/docs_content_model.xml');
+
+define('ISLANDORA_SP_COLLECTION_TITLE', 'Islandora Document Collection');
+define('ISLANDORA_SP_COLLECTION', 'docs_sp_collection');
+define('ISLANDORA_SP_COLLECTION_FILE', 'xml/docs_collection.xml');
+
+        
+
+/**
+ * Islandora docs sp required fedora objects
+ * @return type 
+ */
+function islandora_docs_sp_required_fedora_objects() {
+
+    $module_path = drupal_get_path('module', ISLANDORA_SP_MODULE_NAME);
+
+    // Put the form in the database
+    module_load_include('inc', 'xml_form_builder', 'XMLFormDatabase');
+    
+    if (!XMLFormDatabase::Exists(ISLANDORA_DOCS_SP_MODS_FORM_NAME)) {    
+        $definition = new DOMDocument();
+        $definition->load($module_path . '/' . ISLANDORA_SP_MODS_FORM_FILE);
+        XMLFormDatabase::Create(ISLANDORA_DOCS_SP_MODS_FORM_NAME, $definition);
+    }
+
+    // Associates the form with the content model
+    $result = db_result(db_query('Select content_model from {islandora_content_model_forms} where  content_model = "%s" and form_name = "%s"', 'islandora:'.ISLANDORA_SP_CONTENT_MODEL, ISLANDORA_DOCS_SP_MODS_FORM_NAME));
+    
+    if (!$result) {
+        $object = new stdClass();
+        $object->content_model = 'islandora:'.ISLANDORA_SP_CONTENT_MODEL;
+        $object->form_name = ISLANDORA_DOCS_SP_MODS_FORM_NAME;
+        $object->dsid = 'MODS';
+        $object->title_field = "['titleInfo']['title']";
+        $object->transform = 'mods_to_dc.xsl';
+        $result = drupal_write_record('islandora_content_model_forms', $object);
+    }
+
+    return array(
+        'islandora_docs_sp' => array(
+            'module' => ISLANDORA_SP_MODULE_NAME,
+            'title' => ISLANDORA_DOCS_SP_MODS_FORM_NAME,
+            'objects' => array(
+                array(
+                    'pid' => 'islandora:'.ISLANDORA_SP_CONTENT_MODEL,
+                    'label' => ISLANDORA_SP_CONTENT_MODEL_TITLE,
+                    'dsid' => 'ISLANDORACM',
+                    'datastream_file' => "$module_path/" . ISLANDORA_SP_CONTENT_MODEL_FILE,
+                    'cmodel' => 'fedora-system:ContentModel-3.0',
+                ),
+                array(
+                    'pid' => 'islandora:'.ISLANDORA_SP_COLLECTION,
+                    'label' => ISLANDORA_SP_COLLECTION_TITLE,
+                    'cmodel' => 'islandora:collectionCModel',
+                    'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+                    'datastreams' => array(
+                        array(
+                            'dsid' => 'TN',
+                            'datastream_file' => "$module_path/images/Crystal_Clear_filesystem_folder_grey.png",
+                            'mimetype' => 'image/png',
+                        ),
+                        array(
+                            'dsid' => 'COLLECTION_POLICY',
+                            'datastream_file' => "$module_path/".ISLANDORA_SP_COLLECTION_FILE,
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    );
+}
+

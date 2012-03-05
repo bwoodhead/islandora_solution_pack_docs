@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ *
+ * Installs the required associations/forms.
+ */
+
+/**
+ * Implementation of hook_install.
+ */
+function islandora_docs_sp_install() {
+    
+    module_load_include('inc', 'xml_form_builder', 'XMLFormDatabase');
+    
+    if (!XMLFormDatabase::Exists(ISLANDORA_DOCS_SP_MODS_FORM_NAME)) {
+        $module_path = drupal_get_path('module', ISLANDORA_SP_MODULE_NAME);
+        $definition = new DOMDocument();
+        $definition->load($module_path . '/'.ISLANDORA_SP_MODS_FORM_FILE);
+        XMLFormDatabase::Create(ISLANDORA_DOCS_SP_MODS_FORM_NAME, $definition);
+    }
+    
+    // Associates the form with the content model
+    $result = db_result(db_query('Select content_model from {islandora_content_model_forms} where  content_model = "%s" and form_name = "%s"', 'islandora:'.ISLANDORA_SP_CONTENT_MODEL, ISLANDORA_DOCS_SP_MODS_FORM_NAME));
+    
+    if (!$result) {
+        $object = new stdClass();
+        $object->content_model = 'islandora:'.ISLANDORA_SP_CONTENT_MODEL;
+        $object->form_name = ISLANDORA_DOCS_SP_MODS_FORM_NAME;
+        $object->dsid = 'MODS';
+        $object->title_field = "['titleInfo']['title']";
+        $object->transform = 'mods_to_dc.xsl';
+        $result = drupal_write_record('islandora_content_model_forms', $object);
+    }
+}
+
+/**
+ * Implementation of hook_uninstall.
+ */
+function islandora_docs_sp_uninstall() {
+    
+    module_load_include('inc', 'xml_form_builder', 'XMLFormDatabase');
+
+    if (XMLFormDatabase::Exists(ISLANDORA_DOCS_SP_MODS_FORM_NAME)) {
+        XMLFormDatabase::Delete(ISLANDORA_DOCS_SP_MODS_FORM_NAME);
+    }
+    
+    $result = db_result(db_query('Select content_model from {islandora_content_model_forms} where content_model = "%s" and form_name = "%s"', 'islandora:'.ISLANDORA_SP_CONTENT_MODEL, ISLANDORA_DOCS_SP_MODS_FORM_NAME));
+    
+    if (!$result) {
+        db_query('DELETE FROM {islandora_content_model_forms} WHERE content_model = "%s" and form_name = "%s"', 'islandora:docs_sp_cm', ISLANDORA_DOCS_SP_MODS_FORM_NAME);
+    }
+}

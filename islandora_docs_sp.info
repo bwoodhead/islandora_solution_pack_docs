@@ -1,0 +1,6 @@
+name = Islandora Document Solution Pack
+description = Islandora configurations for persisting and retrieving documents
+dependencies[] = fedora_repository
+package = Islandora Solution Pack
+version = 11.3.1
+core = 6.x
