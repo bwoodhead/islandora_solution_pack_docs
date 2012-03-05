@@ -8,20 +8,19 @@ define('ISLANDORA_SP_TITLE', 'Islandora Documents Solution Pack');
 define('ISLANDORA_SP_MODULE_NAME', 'islandora_docs_sp');
 
 define('ISLANDORA_SP_MODS_FORM_NAME', 'Islandora Docs MODS Form');
-define('ISLANDORA_SP_MODS_FORM_FILE', 'xml/mods_article.xml');
+define('ISLANDORA_SP_MODS_FORM_FILE', '/xml/mods_article.xml');
 
 define('ISLANDORA_SP_CONTENT_MODEL_TITLE', 'Islandora Document Content Model');
-define('ISLANDORA_SP_CONTENT_MODEL', 'docs_sp_cm');
-define('ISLANDORA_SP_CONTENT_MODEL_FILE', 'xml/docs_content_model.xml');
+define('ISLANDORA_SP_CONTENT_MODEL', 'islandora:docs_sp_cm');
+define('ISLANDORA_SP_CONTENT_MODEL_FILE', '/xml/docs_content_model.xml');
 
 define('ISLANDORA_SP_COLLECTION_TITLE', 'Islandora Document Collection');
-define('ISLANDORA_SP_COLLECTION', 'docs_sp_collection');
-define('ISLANDORA_SP_COLLECTION_FILE', 'xml/docs_collection.xml');
-
-        
+define('ISLANDORA_SP_COLLECTION', 'islandora:docs_sp_collection');
+define('ISLANDORA_SP_COLLECTION_FILE', '/xml/docs_collection.xml');
 
 /**
- * Islandora docs sp required fedora objects
+ * Islandora document solution pack required fedora objects
+ * module_invoke_all('required_fedora_objects') called from Islandora Core
  * @return type 
  */
 function islandora_docs_sp_required_fedora_objects() {
@@ -51,7 +50,7 @@ function islandora_docs_sp_required_fedora_objects() {
     }
 
     return array(
-        'islandora_docs_sp' => array(
+        ISLANDORA_SP_MODULE_NAME => array(
             'module' => ISLANDORA_SP_MODULE_NAME,
             'title' => ISLANDORA_DOCS_SP_MODS_FORM_NAME,
             'objects' => array(
