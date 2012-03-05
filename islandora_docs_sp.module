@@ -4,19 +4,6 @@
  * @file
  * Islandora docs solution pack module
  */
-define('ISLANDORA_SP_TITLE', 'Islandora Documents Solution Pack');
-define('ISLANDORA_SP_MODULE', 'islandora_docs_sp');
-
-define('ISLANDORA_SP_MODS_FORM_TITLE', 'Islandora Docs MODS Form');
-define('ISLANDORA_SP_MODS_FORM_FILE', '/xml/mods_article.xml');
-
-define('ISLANDORA_SP_CONTENT_MODEL_TITLE', 'Islandora Document Content Model');
-define('ISLANDORA_SP_CONTENT_MODEL', 'islandora:docs_sp_cm');
-define('ISLANDORA_SP_CONTENT_MODEL_FILE', '/xml/docs_content_model.xml');
-
-define('ISLANDORA_SP_COLLECTION_TITLE', 'Islandora Document Collection');
-define('ISLANDORA_SP_COLLECTION', 'islandora:docs_sp_collection');
-define('ISLANDORA_SP_COLLECTION_FILE', '/xml/docs_collection.xml');
 
 /**
  * Islandora document solution pack required fedora objects
@@ -26,30 +13,32 @@ define('ISLANDORA_SP_COLLECTION_FILE', '/xml/docs_collection.xml');
 function islandora_docs_sp_required_fedora_objects() {
 
     // Get the module path
-    $module_path = drupal_get_path('module', ISLANDORA_SP_MODULE_NAME);
-    $mods_form = $module_path . ISLANDORA_SP_MODS_FORM_FILE;
-    $content_model_form = $module_path . ISLANDORA_SP_CONTENT_MODEL_FILE;
-    $collection_form = $module_path . ISLANDORA_SP_COLLECTION_FILE;
+    $module_path = drupal_get_path('module', 'islandora_docs_sp');
+    
+    // Create all the file paths
+    $mods_form = $module_path . '/xml/mods_article.xml';
+    $content_model_form = $module_path . '/xml/docs_content_model.xml';
+    $collection_form = $module_path . '/xml/docs_collection.xml';
     
     // Register the forms if they haven't already been
-    solution_pack_register_form(ISLANDORA_SP_MODS_FORM_NAME, $mods_form);
-    solution_pack_register_form_association(ISLANDORA_SP_MODS_FORM_NAME, ISLANDORA_SP_CONTENT_MODEL);
+    solution_pack_register_form('Islandora Docs MODS Form', $mods_form);
+    solution_pack_register_form_association('Islandora Docs MODS Form', 'islandora:docs_sp_cm');
 
     return array(
-        ISLANDORA_SP_MODULE => array(
-            'module' => ISLANDORA_SP_MODULE,
-            'title' => ISLANDORA_SP_TITLE,
+        'islandora_docs_sp' => array(
+            'module' => 'islandora_docs_sp',
+            'title' => 'Islandora Documents Solution Pack',
             'objects' => array(
                 array(
-                    'pid' => ISLANDORA_SP_CONTENT_MODEL,
-                    'label' => ISLANDORA_SP_CONTENT_MODEL_TITLE,
+                    'pid' => 'islandora:docs_sp_cm',
+                    'label' => 'Islandora Document Content Model',
                     'dsid' => 'ISLANDORACM',
                     'datastream_file' => $content_model_form,
                     'cmodel' => 'fedora-system:ContentModel-3.0',
                 ),
                 array(
-                    'pid' => ISLANDORA_SP_COLLECTION,
-                    'label' => ISLANDORA_SP_COLLECTION_TITLE,
+                    'pid' => 'islandora:docs_sp_collection',
+                    'label' => 'Islandora Document Collection',
                     'cmodel' => 'islandora:collectionCModel',
                     'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
                     'datastreams' => array(
@@ -68,4 +57,58 @@ function islandora_docs_sp_required_fedora_objects() {
         ),
     );
 }
+
+/**
+ * SP Hook: Set the solution pack defaults 
+ * @param type $data
+ * @return string 
+ */
+function islandora_docs_sp_setup_defaults(&$data)
+{
+    // Get the module path
+    $module_path = drupal_get_path('module', 'islandora_docs_sp');
+    
+    // Create an area for this solution pack
+    $data['islandora_docs_sp'] = array(
+        'label' => 'Islandora Documents Solution Pack',
+        'forms' => array(
+            array(
+                'label' => 'Islandora Docs MODS Form',
+                'file' => "$module_path/mods_article.xml",
+            ),
+        ), 
+        'objects' => array(
+            array(
+                'pid' => 'islandora:docs_sp_cm',
+                'label' => 'Islandora Document Content Model',
+                'dsid' => 'ISLANDORACM',
+                'datastream_file' => "$module_path/xml/docs_content_model.xml",
+                'dsversion' => NULL,
+                'foxml_file' => NULL,
+                'form' => 'Islandora Docs MODS Form'
+            ), 
+            array(
+                'pid' => 'islandora:docs_sp_collection',
+                'label' => 'Islandora Document Collection',
+                'cmodel' => 'islandora:collectionCModel',
+                'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+                'datastreams' => array(
+                    array(
+                        'dsid' => 'TN',
+                        'datastream_file' => "$module_path/images/Crystal_Clear_filesystem_folder_grey.png",
+                        'mimetype' => 'image/png',
+                    ),
+                    array(
+                        'dsid' => 'COLLECTION_POLICY',
+                        'datastream_file' => "$module_path/xml/docs_collection.xml",
+                    )
+                )
+            )
+        )
+    );
+    
+    // Return the config
+    return $data;
+}
+
 
