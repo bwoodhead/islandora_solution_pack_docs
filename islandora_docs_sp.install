@@ -31,8 +31,11 @@ function islandora_docs_sp_uninstall() {
     
     // Load the solution pack from islandora core
     module_load_include('inc', 'fedora_repository', 'fedora_repository.solutionpacks');
+
+    // Unregister the form association
+    solution_pack_unregister_form_association(ISLANDORA_DOCS_SP_MODS_FORM_NAME, ISLANDORA_SP_CONTENT_MODEL);
     
     // Unregister the form 
-    solution_pack_unregister_form(ISLANDORA_DOCS_SP_MODS_FORM_NAME, ISLANDORA_SP_CONTENT_MODEL);
+    solution_pack_unregister_form(ISLANDORA_DOCS_SP_MODS_FORM_NAME);
 }
 
