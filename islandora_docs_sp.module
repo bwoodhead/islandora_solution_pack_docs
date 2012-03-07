@@ -6,123 +6,71 @@
  */
 
 /**
- * Register the solution pack
- * @param type $data 
- */
-function islandora_docs_sp_register_solution_pack()
-{
-    // Name the solution pack
-     return array( 'islandora_docs_sp' => 'Islandora Documents Solution Pack' );
-}
-
-/**
- * Register the solution pack forms
- * @param array $data
+ * islandora pdf sp required fedora objects
  * @return type 
  */
-function islandora_docs_sp_register_solution_pack_forms()
-{
-    // Get the module path
-    $module_path = drupal_get_path('module', 'islandora_docs_sp');
+function islandora_docs_sp_required_fedora_objects() {
 
-    // Return the forms
-    return array( 'islandora_docs_sp' =>
-        array(
-            'label' => 'Islandora Docs MODS Form',
-            'file' => "$module_path/xml/mods_article.xml",
-        ),
-    );
-}
-
-/**
- * Register the solution packs content models
- * @param type $data 
- */
-function islandora_docs_sp_register_solution_pack_content_models()
-{
-    // Get the module path
-    $module_path = drupal_get_path('module', 'islandora_docs_sp');
-
-    // Return the content models
-    return array( 'islandora_docs_sp' =>
-        array(
-            'pid' => 'islandora:docs_sp_cm',
-            'label' => 'Islandora Document Content Model',
-            'form' => 'Islandora Docs MODS Form',
-            'dsid' => 'ISLANDORACM',
-            'datastream_file' => "$module_path/xml/docs_content_model.xml",
-        ),
-    );
-}
-
-/**
- * Register the solution packs content models
- * @param type $data 
- */
-function islandora_docs_sp_register_solution_pack_collection()
-{
-    // Get the module path
-    $module_path = drupal_get_path('module', 'islandora_docs_sp');
+    // Get the module name and path name
+    $module_name = explode('.module',basename(__FILE__));
+    $module_name = $module_name[0];
     
-    // Return the collections
-    return array( 'islandora_docs_sp' =>
-        array(
-            'pid' => 'islandora:docs_sp_collection',
-            'label' => 'Islandora Document Collection',
-            'cmodel' => 'islandora:collectionCModel',
-            'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
-            'dsid' => 'COLLECTION_POLICY',
-            'datastream_file' => "$module_path/xml/docs_collection.xml",
-            'thumbnail_file' =>  "$module_path/images/Crystal_Clear_filesystem_folder_grey.png",
-            'thumbnail_mimetype' => 'image/png',
-        ),
-    );        
-}
-
-/**
- * SP Hook: Set the solution pack defaults 
- * @param type $data
- * @return string 
- */
-function islandora_docs_sp_setup_defaults(&$data)
-{
+    // Get the path
+    $module_path = drupal_get_path('module', $module_name);
     
-    // Create an area for this solution pack
-    $data['islandora_docs_sp'] = array(
-        'label' => 'Islandora Documents Solution Pack',
-        'forms' => array(
+    // User defined values
+    $module_title = 'Islandora Documents Solution Pack';    
 
-        ), 
-        'objects' => array(
+    $form_name = 'Islandora Documents MODS Form';
+    $form_xml_file = "$module_path/xml/mods_article.xml";
+    
+    $content_model = 'islandora:docs_sp_cm';
+    $content_model_label = 'Islandora Document Content Model'; 
+    $content_model_file = "$module_path/xml/docs_content_model.xml";
+    
+    $collection = 'islandora:docs_sp_collection';
+    $collection_label = 'Islandora Document Collection';
+    $collection_file = "$module_path/xml/docs_collection.xml";
+    $collection_thumbnail_file = "$module_path/images/Crystal_Clear_filesystem_folder_grey.png";
+    $collection_thumbnail_mimetype = 'image/png';
+
+    // Include the solution pack
+    module_load_include('inc', 'fedora_repository', 'core/fedora_repository.solutionpacks');
+    
+    // Add the forms
+    solution_pack_add_form($form_name, file_get_contents($form_xml_file));
+    solution_pack_add_form_association($content_model, $form_name);
+
+    return array(
+    $module_name => array(
+      'module' => $module_name,
+      'title' => $module_title,
+      'objects' => array(
+        array(
+          'pid' => $content_model,
+          'label' => $content_model_label,
+          'dsid' => 'ISLANDORACM',
+          'datastream_file' => $content_model_file,
+          'cmodel' => 'fedora-system:ContentModel-3.0',
+        ),
+        array(
+          'pid' => $collection,
+          'label' => $collection_label,
+          'cmodel' => 'islandora:collectionCModel',
+          'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+          'datastreams' => array(
             array(
-                'pid' => 'islandora:docs_sp_cm',
-                'label' => 'Islandora Document Content Model',
-                'form' => 'Islandora Docs MODS Form',
-                'dsid' => 'ISLANDORACM',
-                'datastream_file' => "$module_path/xml/docs_content_model.xml",
-            ), 
-            array(
-                'pid' => 'islandora:docs_sp_collection',
-                'label' => 'Islandora Document Collection',
-                'cmodel' => 'islandora:collectionCModel',
-                'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
-                'datastreams' => array(
-                    array(
-                        'dsid' => 'TN',
-                        'datastream_file' => "$module_path/images/Crystal_Clear_filesystem_folder_grey.png",
-                        'mimetype' => 'image/png',
-                    ),
-                    array(
-                        'dsid' => 'COLLECTION_POLICY',
-                        'datastream_file' => "$module_path/xml/docs_collection.xml",
-                    ),
-                ),
+              'dsid' => 'TN',
+              'datastream_file' => $collection_thumbnail_file,
+              'mimetype' => $collection_thumbnail_mimetype,
             ),
+            array(
+              'dsid' => 'COLLECTION_POLICY',
+              'datastream_file' => $collection_file,
+            ),
+          ),
         ),
-    );
-    
-    // Return the config
-    return $data;
+      ),
+    ),
+  );
 }
-
-
