@@ -2,14 +2,37 @@
   <mimetypes>
     <type>application/pdf</type>
     <type>application/msword</type>
+    <type>application/vnd.oasis.opendocument.text</type>
   </mimetypes>
   <ingest_rules>
     <rule>
       <applies_to>application/pdf</applies_to>
-      <applies_to>application/msword</applies_to>
       <ingest_methods>
-        <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.php" method="ingest" 
+        <ingest_method class="DocumentProcessor" dsid="PDF" file="DocumentProcessor.php" method="ingestPDF" 
             modified_files_ext="pdf" module="islandora_docs_sp">
+        </ingest_method>
+      </ingest_methods>
+    </rule>
+    <rule>
+      <applies_to>application/msword</applies_to>
+      <applies_to>application/vnd.oasis.opendocument.text</applies_to>
+      <ingest_methods>
+        <ingest_method class="DocumentProcessor" dsid="PDF" file="DocumentProcessor.php" method="convertAndIngestPDF" 
+            modified_files_ext="pdf" module="islandora_docs_sp">
+        </ingest_method>
+      </ingest_methods>
+    </rule>
+    <rule>
+      <applies_to>application/pdf</applies_to>
+      <applies_to>application/msword</applies_to>
+      <applies_to>application/vnd.oasis.opendocument.text</applies_to>
+      <ingest_methods>
+        <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.php" method="createThumbnail" 
+            modified_files_ext="jpg" module="islandora_docs_sp">
+            <parameters>
+                <parameter name="width">100</parameter>
+                <parameter name="height">120</parameter>
+          </parameters>
         </ingest_method>
       </ingest_methods>
     </rule>
@@ -17,11 +40,6 @@
   <datastreams>
     <datastream dsid="TN">
       <display_method class="DocumentProcessor" file="DocumentProcessor.php" method="displayThumbnail" module="islandora_docs_sp"/>
-    </datastream>
-    <datastream dsid="OBJ">
-      <add_datastream_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
-        method="createDerivatives" modified_files_ext="jpg" module="islandora_docs_sp">
-      </add_datastream_method>
     </datastream>
   </datastreams>
 </content_model>
