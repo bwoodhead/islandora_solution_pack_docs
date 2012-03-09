@@ -24,7 +24,7 @@ function islandora_docs_sp_required_fedora_objects() {
     $form_name = 'Islandora Documents MODS Form';
     $form_xml_file = "$module_path/xml/mods_article.xml";
     
-    $content_model = 'islandora:docs_sp_cm';
+    $content_model = 'islandora:docs_sp_content_model';
     $content_model_label = 'Islandora Document Content Model'; 
     $content_model_file = "$module_path/xml/docs_content_model.xml";
     
