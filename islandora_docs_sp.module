@@ -35,7 +35,7 @@ function islandora_docs_sp_required_fedora_objects() {
     $collection_thumbnail_mimetype = 'image/png';
 
     // Include the solution pack
-    module_load_include('inc', 'fedora_repository', 'core/fedora_repository.solutionpacks');
+    module_load_include('inc', 'fedora_repository', 'fedora_repository.solutionpacks');
     
     // Add the forms
     solution_pack_add_form($form_name, file_get_contents($form_xml_file));
