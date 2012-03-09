@@ -5,19 +5,10 @@ class DocumentProcessor
 {
     
     /**
-     * Ingest a pdf 
-     */
-    public function ingestPDF($args, $dsid, $file, $file_ext) {
-        
-        // Copy the pdf 
-        $_SESSION['fedora_ingest_files']["$dsid"] = $file;
-        return TRUE;
-    }
-    
-    /**
      * Convert to pdf then ingest 
      */
-    public function convertAndIngestPDF($args, $dsid, $file, $file_ext) {
+    public function ingestDocument($args, $dsid, $file, $file_ext) {
+        xdebug_get_function_stack();
         
         $returnValue = TRUE;
         $output = array();
@@ -39,6 +30,9 @@ class DocumentProcessor
         else {
             $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
         }
+        
+        // Hack
+        $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
 
         // Create the file
         system($application. " " . $args . " " . $file, $returnValue);
@@ -121,7 +115,7 @@ class DocumentProcessor
             $tn_url = $base_path . drupal_get_path('module', 'fedora_repository') . '/images/Crystal_Clear_app_download_manager.png';
         }
 
-        $dl_link = l('<div  style="float:left; padding: 10px"><img src="' . $tn_url . '"><br />View Document</div>', 'fedora/repository/' . $this->pid . '/OBJ', array('html' => TRUE));
+        $dl_link = l('<div  style="float:left; padding: 10px"><img src="' . $tn_url . '"><br />View Document</div>', 'fedora/repository/' . $this->pid . '/PDF', array('html' => TRUE));
 
         $tabset = array();
 
