@@ -93,6 +93,10 @@ class DocumentProcessor
         }        
     }
     
+    public function displayPDF() {
+        
+    }
+    
     /**
      * Display Thumbnail is a hook called from the content model 
      */
