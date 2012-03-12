@@ -3,182 +3,186 @@
 
 class DocumentProcessor 
 {
-    
+
     /**
      * Convert to pdf then ingest 
-     */
-    public function ingestDocument($args=NULL, $dsid, $file, $file_ext) {
-        
-        $returnValue = TRUE;
-        $output = array();
-
-        $destFile = dirname($file) . basename($file) . '.' . $file_suffix;
-        
-        $application = '';
-        $args ='--headless --convert-to PDF ';
-
-        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
-            $application = '';
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            $application = '';
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-           $application = '';
-        }
-        else {
-            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-        }
-        
-        // Hack
-        $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-
-        // Create the file
-        system($application. " " . $args . " " . $file, $returnValue);
-
-        if ($returnValue == '0') {
-            $_SESSION['fedora_ingest_files']["$dsid"] = $destFile;
-            return TRUE;
-        }
-        else {
-            return $returnValue;
-        }        
-    }
-  /**
-   * Create thumbnail from pdf
-   * @param type $parameterArray
-   * @param type $dsid
-   * @param type $file
-   * @param type $file_ext
-   * @return boolean 
-   */
-  function createThumbnailFromPDF($parameterArray, $dsid, $file, $file_ext) {
-    $height = $parameterArray['height'];
-    $width = $parameterArray['width'];
-    $file_suffix = '_' . $dsid . '.' . $file_ext;
-    $returnValue = TRUE;
-    //system("convert $file\[0\] -thumbnail 128x128 $uploaddir$thumb");
-    // Use this for Linux.
-    if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
-      
-    }
-    elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-      $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
-    }
-    elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-      // Use this for Mac OS X (MAMP)
-      $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
-    }
-    else {
-      $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
-    }
-
-    system($cmdline, $returnValue);
-    //system("convert $file\[0\] -thumbnail 128x128 $uploaddir$thumb");
-    $var = $file . $file_suffix . ' returnvalue= ' . $returnValue;
-
-    if ($returnValue == '0') {
-      $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
-      return TRUE;
-    }
-    else {
-      return $returnValue;
-    }
-  }
-    
-    /**
-     * Create the thumbnail
-     * @param type $args
+     * @param string $args
      * @param type $dsid
      * @param type $file
      * @param type $file_ext
+     * @return boolean 
+     */
+    public function convertDocumentToPDFHandler($args=NULL, $dsid, $file, $return_type) {
+        
+        // Convert the document to a pdf
+        $dest_file = convertDocumentToPDF($file, $dsid, $return_type);
+        
+        // Check to see if it worked
+        if ( $dest_file != false ) {
+            
+            // Store the file in the session
+            $_SESSION['fedora_ingest_files']["$dsid"] = $dest_file;
+            
+            // Return sucess
+            return true;
+        } 
+        
+        // Return failed
+        return false;
+    }
+    
+    /**
+     * Convert to pdf then create a thumbnail
+     * @param type $args
+     * @param type $dsid
+     * @param type $file
+     * @param type $file_ext 
+     */
+    public function createThumbnailFromDocumentHandler($args, $dsid, $file, $return_type) {
+
+        // Get the parameters
+        $width = $args['width'];
+        $height = $args['height'];
+
+        // Convert the document to pdf
+        $dest_file = convertDocumentToPDF($file, 'PDF', '.pdf');
+        
+        // Create a thumbnail of the pdf
+        $thumbnail = creatPDFThumbnail($dest_file, $width, $height, $dsid, $return_type);
+        
+        // Check to see if the thumbnail is valid
+        if ( $thumbnail != false ) {
+            
+            // Store the thumbnail in the session
+            $_SESSION['fedora_ingest_files']["$dsid"] = $thumbnail;
+            
+            // Return success
+            return true;
+        } 
+        
+        // Return failed
+        return false;        
+    }
+    
+    /**
+    * Create thumbnail from pdf
+    * @param type $parameterArray
+    * @param type $dsid
+    * @param type $file
+    * @param type $file_ext
+    * @return boolean 
+    */
+    public function createThumbnailFromPDFHandler($args, $dsid, $file, $return_type) {
+
+        // Get the parameters
+        $height = $args['height'];
+        $width = $args['width'];
+
+        // Create a thumbnail of the pdf
+        $thumbnail = creatPDFThumbnail($file, $width, $height, $dsid, $return_type);
+        
+        // Check to see if the thumbnail is valid
+        if ( $thumbnail != false ) {
+            
+            // Store the thumbnail in the session
+            $_SESSION['fedora_ingest_files']["$dsid"] = $thumbnail;
+            
+            // Return success
+            return true;
+        } 
+        
+        // Return failed
+        return false; 
+    } 
+    
+    
+    /**
+     * Convert the document to a pdf
+     * @param type $file
      * @return boolean|string 
      */
-    //function createThumbnailFromPDF($parameterArray, $dsid, $file, $file_ext) {
-    public function createThumbnail($args=NULL, $dsid, $file, $file_ext) {
-
-        // Get the width and height from the arguments
-        $height = $parameterArray['height'];
-        $width = $parameterArray['width'];
+    private function convertDocumentToPDF($file, $dsid, $return_type) {
         
-        // Get the file from the session
-        $file = $_SESSION['fedora_ingest_files']["$dsid"];
+        // Create the return file name
+        $dest_file = dirname($file) . basename($file) . '.pdf';
 
-        $file_suffix = '_' . $dsid . '.' . $file_ext;
-        $returnValue = TRUE;
+        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
+            
+            // Needs fixing
+            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
 
+            // Needs fixing
+            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
+
+            // Needs fixing
+            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+        }
+        else {
+
+            // Needs fixing
+            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+        }
+
+        // Build the command to convert the file to a pdf
+        $cmdline = $application + ' --headless --convert-to pdf ' + $file;
+        $return_value = true;
+        
+        // Run the command
+        system($cmdline, $return_value);
+
+        // Check to see if the call failed
+        if ( $returnValue == false ) {
+            
+            // Return failed
+            return false;
+        }
+        
+        // Return the file
+        return $dest_file;
+    }
+    
+    /**
+     * Create a thumbnail
+     * @param type $file
+     * @param type $dsid
+     * @param type $width
+     * @param type $height
+     * @return boolean 
+     */
+    private function createThumbnail($file, $width, $height, $return_type) {
+        
+        // Create the return file name
+        $dest_file = dirname($file) . basename($file) . $return_type;
+        
         if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
 
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
+            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$dest_file\"";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-            // Use this for Mac OS X (MAMP)
+        // Use this for Mac OS X (MAMP)
             $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
         }
         else {
-            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
+            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$dest_file\"";
         }
 
-        system($cmdline, $returnValue);
-
-        $var = $file . $file_suffix . ' returnvalue= ' . $returnValue;
-
-        if ($returnValue == '0') {
-            $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
-            return TRUE;
-        }
-        else {
-            return $returnValue;
-        }        
-    }
-    
-    public function displayPDF() {
+        // Create the default return value
+        $return_value = true;
         
-    }
-    
-    /**
-     * Display Thumbnail is a hook called from the content model 
-     */
-    public function displayThumbnail() {
+        // Exec the command
+        system($cmdline, $return_value);
         
-        global $base_url;
-        global $base_path;
-        global $user;
+        if ( $return_value == false ) {
+            return false;
+        } 
         
-        module_load_include('inc', 'fedora_repository', 'api/fedora_item');
-        
-        $objectHelper = new ObjectHelper();
-        
-        $item = new Fedora_Item($this->pid);
-        
-        if (key_exists('TN', $item->datastreams)) {
-            $tn_url = $base_url . '/fedora/repository/' . $item->pid . '/TN';
-        }
-        else {
-            $tn_url = $base_path . drupal_get_path('module', 'fedora_repository') . '/images/Crystal_Clear_app_download_manager.png';
-        }
-
-        $dl_link = l('<div  style="float:left; padding: 10px"><img src="' . $tn_url . '"><br />View Document</div>', 'fedora/repository/' . $this->pid . '/PDF', array('html' => TRUE));
-
-        $tabset = array();
-
-        $tabset['first_tab'] = array(
-            '#type' => 'tabpage',
-            '#title' => t('PDF'),
-            '#content' => $dl_link,
-        );
-
-        $tabset['second_tab'] = array(
-            '#type' => 'tabpage',
-            '#title' => t('Read Online'),
-            '#content' => "<iframe src=\"http://docs.google.com/viewer?url=" . $base_url . '/fedora/repository/' .
-            $this->pid . '/OBJ/preview.pdf' . "&embedded=TRUE\" style=\"width:600px; height:500px;\" frameborder=\"0\"></iframe>"
-        );
-
-        // Render the tabset.
-        return $tabset;
+        return $dest_file;
     }
 }
 
