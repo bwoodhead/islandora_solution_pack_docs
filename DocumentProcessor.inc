@@ -15,7 +15,14 @@ class DocumentProcessor {
     $height = $parameterArray['height'];
     $width = $parameterArray['width'];
     
-    return $this->createThumbnailFromPDF($file, $width, $height, $file_ext);
+    $results = $this->createThumbnailFromPDF($file, $width, $height, $file_ext);
+
+    if ($results != false) {
+      
+      $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+      return TRUE;
+    }
+    return $results;
   }
     
   /**
@@ -49,14 +56,15 @@ class DocumentProcessor {
 
     system($cmdline, $returnValue);
 
-    $var = $file . $file_suffix . ' returnvalue= ' . $returnValue;
-
     if ($returnValue == '0') {
-      $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
-      return TRUE;
+      
+      // return the file name
+      return $file . $file_suffix;
     }
     else {
-      return $returnValue;
+        
+      // return failed
+      return false;
     }
   }
     /**
