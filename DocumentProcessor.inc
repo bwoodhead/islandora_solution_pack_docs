@@ -7,7 +7,7 @@ class DocumentProcessor
     /**
      * Convert to pdf then ingest 
      */
-    public function ingestDocument($args, $dsid, $file, $file_ext) {
+    public function ingestDocument($args=NULL, $dsid, $file, $file_ext) {
         
         $returnValue = TRUE;
         $output = array();
@@ -44,6 +44,47 @@ class DocumentProcessor
             return $returnValue;
         }        
     }
+  /**
+   * Create thumbnail from pdf
+   * @param type $parameterArray
+   * @param type $dsid
+   * @param type $file
+   * @param type $file_ext
+   * @return boolean 
+   */
+  function createThumbnailFromPDF($parameterArray, $dsid, $file, $file_ext) {
+    $height = $parameterArray['height'];
+    $width = $parameterArray['width'];
+    $file_suffix = '_' . $dsid . '.' . $file_ext;
+    $returnValue = TRUE;
+    //system("convert $file\[0\] -thumbnail 128x128 $uploaddir$thumb");
+    // Use this for Linux.
+    if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
+      
+    }
+    elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
+      $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
+    }
+    elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
+      // Use this for Mac OS X (MAMP)
+      $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
+    }
+    else {
+      $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
+    }
+
+    system($cmdline, $returnValue);
+    //system("convert $file\[0\] -thumbnail 128x128 $uploaddir$thumb");
+    $var = $file . $file_suffix . ' returnvalue= ' . $returnValue;
+
+    if ($returnValue == '0') {
+      $_SESSION['fedora_ingest_files']["$dsid"] = $file . $file_suffix;
+      return TRUE;
+    }
+    else {
+      return $returnValue;
+    }
+  }
     
     /**
      * Create the thumbnail
@@ -53,11 +94,12 @@ class DocumentProcessor
      * @param type $file_ext
      * @return boolean|string 
      */
-    public function createThumbnail($args, $dsid, $file, $file_ext) {
+    //function createThumbnailFromPDF($parameterArray, $dsid, $file, $file_ext) {
+    public function createThumbnail($args=NULL, $dsid, $file, $file_ext) {
 
         // Get the width and height from the arguments
-        $height = $args['height'];
-        $width = $args['width'];
+        $height = $parameterArray['height'];
+        $width = $parameterArray['width'];
         
         // Get the file from the session
         $file = $_SESSION['fedora_ingest_files']["$dsid"];
