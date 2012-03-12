@@ -38,29 +38,34 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   <mimetypes>
     <type>application/pdf</type>
     <type>application/msword</type>
+    <type>application/vnd.oasis.opendocument.text</type>
   </mimetypes>
   <ingest_rules>
     <rule>
-    <type>application/pdf</type>
-    <type>application/msword</type>
+      <applies_to>application/pdf</applies_to>
+      <applies_to>application/msword</applies_to>
+      <applies_to>application/vnd.oasis.opendocument.text</applies_to>
       <ingest_methods>
-        <ingest_method class="DocumentProcessor" dsid="OBJ" file="DocumentProcessor.php" method="ingestDocument" modified_files_ext="pdf" module="islandora_solution_pack_docs"></ingest_method>
-      </ingest_methods>
-      <ingest_methods>
-        <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.php" method="createThumbnail" modified_files_ext="jpg" module="islandora_solution_pack_docs"></ingest_method>
+        <ingest_method class="DocumentProcessor" dsid="OBJ" file="DocumentProcessor.inc" method="ingestDocument" modified_files_ext="pdf" module="islandora_docs_sp"></ingest_method>
+        <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc" method="createThumbnail" modified_files_ext="jpg" module="islandora_docs_sp">
+            <parameters>
+              <parameter name="width">100</parameter>
+              <parameter name="height">120</parameter>
+            </parameters>
+        </ingest_method>
       </ingest_methods>
     </rule>
   </ingest_rules>
   <datastreams>
     <datastream dsid="OBJ">
-      <display_method class="DocumentProcessor" file="DocumentProcessor.php" method="displayPDF" module="islandora_solution_pack_docs"></display_method>
+      <display_method class="DocumentProcessor" file="DocumentProcessor.php" method="displayPDF" module="islandora_docs_sp"></display_method>
     </datastream>   
     <datastream dsid="TN">
-      <display_method class="DocumentProcessor" file="DocumentProcessor.php" method="displayThumbnail" module="islandora_solution_pack_docs"></display_method>
+      <display_method class="DocumentProcessor" file="DocumentProcessor.php" method="displayThumbnail" module="islandora_docs_sp"></display_method>
     </datastream>
   </datastreams>
   <ingest_form dsid="QDC" page="2">
-    <form_builder_method class="DocumentProcessor" file="DocumentProcessor.php" handler="handleQDCForm" method="buildQDCForm" module="islandora_solution_pack_docs"></form_builder_method>
+    <form_builder_method class="DocumentProcessor" file="DocumentProcessor.php" handler="handleQDCForm" method="buildQDCForm" module="islandora_docs_sp"></form_builder_method>
     <form_elements>
       <element label="Title/Caption/Media Name" name="dc:title" required="true" type="textfield">
         <description>The name given to the file</description>

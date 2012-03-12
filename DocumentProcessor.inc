@@ -8,7 +8,6 @@ class DocumentProcessor
      * Convert to pdf then ingest 
      */
     public function ingestDocument($args, $dsid, $file, $file_ext) {
-        xdebug_get_function_stack();
         
         $returnValue = TRUE;
         $output = array();
