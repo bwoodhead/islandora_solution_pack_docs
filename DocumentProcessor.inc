@@ -76,7 +76,7 @@ class DocumentProcessor {
      * @return type 
      */
     public function createPDFThumbnailHandler($args=null, $dsid, $file, $return_type) {
-
+        
         // Get the parameters
         $height = $args['height'];
         $width = $args['width'];
@@ -98,51 +98,9 @@ class DocumentProcessor {
         return $results;
     }
     
-    /**
-     * Create a thumbnail of a pdf
-     * @param type $file
-     * @param type $width
-     * @param type $height
-     * @param type $return_type
-     * @return boolean 
-     */
-    private function createThumbnailFromPDF($file, $width, $height, $dsid, $return_type) {
-
-        // Create a file extension
-        $file_suffix = '_' . $dsid . '.' . $file_ext;
-        
-        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
-      
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-            // Use this for Mac OS X (MAMP)
-            $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
-        }
-        else {
-            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
-        }
-
-        // Create a default error value
-        $return_value = TRUE;
-        
-        // Convert the file
-        system($cmdline, $return_value);
-
-        // Did it succeed 
-        if ($return_value == '0') {
-      
-            // return the new file name
-            return $file . $file_suffix;
-        }
-        else {
-            
-            // return failed
-            return false;
-        }
-    }
+    /******************************************************/
+    // Private Helper functions
+    /******************************************************/
     
     /**
      * Convert the document to a pdf
@@ -151,8 +109,14 @@ class DocumentProcessor {
      */
     private function convertDocumentToPDF($file) {
         
+        if ( ! file_exists($file) ) {
+            var_dump($file);
+            die();
+        }
         // Create the return file name
-        $dest_file = dirname($file) . basename($file) . '.pdf';
+        $file_name = explode('.', basename($file));
+        $dest_file = dirname($file) . '/'. $file_name[0] . '.pdf';
+        //var_dump($dest_file);
 
         if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
             
@@ -176,17 +140,65 @@ class DocumentProcessor {
         }
 
         // Build the command to convert the file to a pdf
-        $cmdline = $application + ' --headless --convert-to pdf ' + $file;
-        $return_value = true;
+        $cmdline = $application . ' --headless --convert-to pdf ' . $file;
+        $return_value = TRUE;
         
         // Run the command
+        //var_dump($cmdline);
         system($cmdline, $return_value);
 
         // Did it succeed 
-        if ($return_value == '0') {
+        if ($return_value !== FALSE) {
       
             // return the new file name
             return $dest_file;
+        }
+        else {
+            
+            // return failed
+            return false;
+        }
+    }
+    
+    /**
+     * Create a thumbnail of a pdf
+     * @param type $file
+     * @param type $width
+     * @param type $height
+     * @param type $return_type
+     * @return boolean 
+     */
+    private function createThumbnailFromPDF($file, $width, $height, $dsid, $return_type) {
+
+        // Create a file extension
+        $file_suffix = '_' . $dsid . '.' . $return_type;
+        
+        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
+      
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
+            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
+            // Use this for Mac OS X (MAMP)
+            $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
+        }
+        else {
+            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
+        }
+
+        // Create a default error value
+        $return_value = TRUE;
+        
+        // Convert the file
+        //var_dump($cmdline);
+        system($cmdline, $return_value);
+
+        // Did it succeed 
+        if ($return_value !== FALSE) {
+      
+            // return the new file name
+            return $file . $file_suffix;
         }
         else {
             

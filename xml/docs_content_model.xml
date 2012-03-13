@@ -42,18 +42,10 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
   </mimetypes>
   <ingest_rules>
     <rule>
-      <applies_to>application/msword</applies_to>
-      <applies_to>application/vnd.oasis.opendocument.text</applies_to>
+      <applies_to>application/pdf</applies_to>
       <ingest_methods>
-        <ingest_method class="DocumentProcessor" dsid="OBJ" file="DocumentProcessor.inc"
-          method="createPDFFromDocumentHandler" modified_files_ext="jpg" module="islandora_docs_sp">
-          <parameters>
-            <parameter name="width">100</parameter>
-            <parameter name="height">120</parameter>
-          </parameters>
-        </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
-          method="createDocumentThumbnailHandler" modified_files_ext="jpg" module="islandora_docs_sp">
+          method="createPDFThumbnailHandler" modified_files_ext=".jpg" module="islandora_docs_sp">
           <parameters>
             <parameter name="width">100</parameter>
             <parameter name="height">120</parameter>
@@ -62,10 +54,11 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
       </ingest_methods>
     </rule>
     <rule>
-      <applies_to>application/pdf</applies_to>
+      <applies_to>application/msword</applies_to>
+      <applies_to>application/vnd.oasis.opendocument.text</applies_to>
       <ingest_methods>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
-          method="createThumbnailFromPDFHandler" modified_files_ext="jpg" module="islandora_docs_sp">
+          method="createDocumentThumbnailHandler" modified_files_ext="jpg" module="islandora_docs_sp">
           <parameters>
             <parameter name="width">100</parameter>
             <parameter name="height">120</parameter>
