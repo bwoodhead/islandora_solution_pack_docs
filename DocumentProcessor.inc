@@ -107,69 +107,47 @@ class DocumentProcessor {
      * @param type $file
      * @return boolean|string 
      */
-    private function convertDocumentToPDF($file) {
+    private function convertDocumentToPDF($source_file) {
         
         // Get just the file name without the extension
-        $file_name = explode('.', basename($file));
-        $file_dir = dirname($file);
-        $dest_file = $file_name[0] . '.pdf';
-        // Get the file name
-        $file = explode('/', $file);
-        $file = $file[sizeof($file)-1]; 
+        $file_name = explode('.', basename($source_file));
+        $file_dir = dirname($source_file);
+        $dest_file = $file_dir . '/' . $file_name[0] . '.pdf';
 
         if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
             
             // Needs fixing
-            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
 
             // Needs fixing
-            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
 
             // Needs fixing
-            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
         }
         else {
 
             // Needs fixing
-            $application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
+            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
         }
-        
-        if ( ! file_exists($file_dir) ) {
-            echo("output directory not there!");
-        }
-        
-        if ( !file_exists($file_dir .'/'.$file)) {
-            echo("file not there");
-        }
-
-        // Build the command to convert the file to a pdf
-        $cmdline = $application . ' --headless --verbose --convert-to pdf:writer_pdf_Export --outdir ' . $file_dir . ' ' . $file_dir .'/'.$file;
-
         $output=array();
         $return_value = TRUE;
-        
-        exec('ls ' . $file_dir, $output, $return_value);
-        var_dump($output);
-        var_dump($return_value);
-        unset($output);
-        
-        // Run the command
-        //system($cmdline, $return_value);
-        exec($cmdline, $output, $return_value);
-        var_dump($output);
-        var_dump($return_value);
-        unset($output);
 
+        // Build the command to convert the file to a pdf
+        $cmdline = 'java -jar ./lib/jodconverter-core-3.0-beta-4.jar ' . $source_file . ' ' . $dest_file;
+        exec($cmdline, $output, $return_value);
+
+        echo("<br>Look at the temp directory <br>");
         // Look again
         exec('ls ' . $file_dir, $output, $return_value);
         var_dump($output);
         var_dump($return_value);
         unset($output);
-
+        
         // Did it succeed 
         if ($return_value !== FALSE) {
       
