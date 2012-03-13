@@ -21,7 +21,7 @@ class DocumentProcessor {
             // Add the file to the session
             $_SESSION['fedora_ingest_files']["$dsid"] = $results;
             
-            // Return success
+            // Return success 
             return TRUE;
         }
         
