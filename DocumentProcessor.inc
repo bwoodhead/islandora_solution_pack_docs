@@ -136,18 +136,17 @@ class DocumentProcessor {
         }
         $output=array();
         $return_value = TRUE;
-
-        // Build the command to convert the file to a pdf
-        $cmdline = 'java -jar ./lib/jodconverter-core-3.0-beta-4.jar ' . $source_file . ' ' . $dest_file;
+        
+        // To get this to work you need to comment out 
+        // #DYLD_LIBRARY_PATH="/Applications/MAMP/Library/lib:$DYLD_LIBRARY_PATH"
+        // #export DYLD_LIBRARY_PATH
+        // in
+        // /Applications/MAMP/Library/bin/envvars
+        $jobconverter = drupal_get_path('module', 'islandora_docs_sp') . '/lib/jodconverter-core-3.0-beta-4.jar';
+        $cmdline = '/usr/bin/java -jar ' . $jobconverter . ' ' . $source_file . ' ' . $dest_file;
+        
         exec($cmdline, $output, $return_value);
 
-        echo("<br>Look at the temp directory <br>");
-        // Look again
-        exec('ls ' . $file_dir, $output, $return_value);
-        var_dump($output);
-        var_dump($return_value);
-        unset($output);
-        
         // Did it succeed 
         if ($return_value !== FALSE) {
       
