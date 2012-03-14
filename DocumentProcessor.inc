@@ -50,7 +50,7 @@ class DocumentProcessor {
         if ($results != false) {
 
             // Create the thumbnail
-            $results = $this->createThumbnailFromPDF($file, $width, $height, $dsid, $return_type);
+            $results = $this->createThumbnailFromPDF($results, $width, $height, $dsid, $return_type);
 
             // Did the create thumbnail fail
             if ($results != false) {
