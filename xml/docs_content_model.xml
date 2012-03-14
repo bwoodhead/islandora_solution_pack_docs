@@ -57,6 +57,9 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
       <applies_to>application/msword</applies_to>
       <applies_to>application/vnd.oasis.opendocument.text</applies_to>
       <ingest_methods>
+        <ingest_method class="DocumentProcessor" dsid="OBJ" file="DocumentProcessor.inc"
+          method="createPDFFromDocumentHandler" modified_files_ext="pdf" module="islandora_docs_sp">
+        </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
           method="createDocumentThumbnailHandler" modified_files_ext="jpg" module="islandora_docs_sp">
           <parameters>
