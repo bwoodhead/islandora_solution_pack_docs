@@ -13,6 +13,9 @@ class DocumentProcessor {
     public function preserveOriginalDocument($args=null, $dsid, $file, $return_type) {
         
         $_SESSION['fedora_ingest_files']["$dsid"] = $file;
+
+        // Return success 
+        return TRUE;
     }
     
     /**
