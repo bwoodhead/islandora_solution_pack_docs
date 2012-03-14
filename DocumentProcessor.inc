@@ -4,6 +4,18 @@
 class DocumentProcessor {
     
     /**
+     * Store the original file
+     * @param type $args
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type 
+     */
+    public function preserveOriginalDocument($args=null, $dsid, $file, $return_type) {
+        
+        $_SESSION['fedora_ingest_files']["$dsid"] = $file;
+    }
+    
+    /**
      * Convert a document to a pdf
      * @param type $parameterArray
      * @param type $dsid
@@ -68,7 +80,7 @@ class DocumentProcessor {
     }
 
     /**
-     * create a pdf thumbnail
+     * Create a pdf thumbnail
      * @param type $parameterArray
      * @param type $dsid
      * @param type $file
