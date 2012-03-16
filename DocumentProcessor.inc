@@ -152,12 +152,7 @@ class DocumentProcessor {
         $output=array();
         $return_value = TRUE;
         
-        // To get this to work you need to comment out 
-        // #DYLD_LIBRARY_PATH="/Applications/MAMP/Library/lib:$DYLD_LIBRARY_PATH"
-        // #export DYLD_LIBRARY_PATH
-        // in
-        // /Applications/MAMP/Library/bin/envvars
-        $jobconverter = drupal_get_path('module', 'islandora_docs_sp') . '/lib/jodconverter-core-3.0-beta-4.jar';
+        $jobconverter = drupal_get_path('module', 'islandora_docs_sp') . '/lib/jodconverter-cli-2.2.2.jar ';
         $cmdline = '/usr/bin/java -jar ' . $jobconverter . ' ' . $source_file . ' ' . $dest_file;
         
         exec($cmdline, $output, $return_value);
