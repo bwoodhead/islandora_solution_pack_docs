@@ -74,3 +74,66 @@ function islandora_docs_sp_required_fedora_objects() {
     ),
   );
 }
+
+/**
+ * Register Disseminators and Viewers
+ * @return type 
+ */
+function islandora_docs_sp_register_services()
+{
+    // Define the end points
+    return array(
+        'islandora_docs_sp' => array (
+            'pdf' => array (
+                'title' => 'PDF', 
+                'function' => 'pdf_handler', 
+                'param_count' => 1, 
+                'security' => array('access content'),
+                'render_drupal' => false, 
+                'example' => 'pdf/{pid}',
+            ),
+            'thumbnail' => array (
+                'title' => 'Thumbnail',
+                'function' => 'thumbnail_handler',
+                'param_count' => 1,
+                'security' => array('access content'),
+                'render_drupal' => false, 
+                'example' => 'thumbnail/{pid}'
+            ),
+            'view' => array (
+                'title' => 'PDF Viewer',
+                'function' => 'view_handler',
+                'param_count' => 1,
+                'security' => array('access content'),
+                'render_drupal' => true,
+                'example' => 'view/{pid}'
+            ),
+        )
+    );
+}
+
+function islandora_docs_sp_pdf_handler($pid) {
+
+    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
+    $object = new Fedora_Item($pid);
+    var_dump($object->get_datastream('OBJ'));
+    return $object->get_datastream('OBJ');
+}
+
+function islandora_docs_sp_thumbnail_handler($pid) {
+    
+    // Get fedora item
+    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
+
+    $url = variable_get('fedora_base_url', 'http://localhost:8080/fedora') . "/objects/$pid/datastreams/'TN'/content";
+    $file_contents = do_curl($url); 
+    //http://localhost:8080/fedora/objects/islandora%3A887/datastreams/TN
+    //https://wiki.duraspace.org/display/FEDORA34/REST+API#RESTAPI-getDatastream
+}
+
+function islandora_docs_sp_view_handler() {
+}
+
+
+
+
