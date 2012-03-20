@@ -108,6 +108,14 @@ function islandora_docs_sp_register_services()
                 'render_drupal' => true,
                 'example' => 'view/{pid}'
             ),
+            'viewer' => array (
+                'title' => 'Flexpaper',
+                'function' => 'view_swf',
+                'param_count' => 0,
+                'security' => array('access content'),
+                'render_drupal' => false,
+                'example' => 'viewer',
+            ),
         )
     );
 }
@@ -139,8 +147,70 @@ function islandora_docs_sp_thumbnail_handler($pid) {
  * @param type $pid
  */
 function islandora_docs_sp_view_handler($pid) {
+
+    // Add swfobject
+    drupal_add_js(drupal_get_path('module', 'islandora_docs_sp') . '/viewer/flexpaper_flash.js');
     
+    // Get drupals base url
+    global $base_url;
+    
+    // Create an element to render content too
+    $content = "
+        <script type=\"text/javascript\"> 
+            var fp = new FlexPaperViewer(	
+                'FlexPaperViewer',
+                'viewerPlaceHolder', { 
+                    config : {
+                        SwfFile : escape('". $base_url . '/islandora_services/islandora_docs_sp/viewer' ."'),
+                        Scale : 0.6, 
+                        ZoomTransition : 'easeOut',
+                        ZoomTime : 0.5,
+                        ZoomInterval : 0.2,
+                        FitPageOnLoad : true,
+                        FitWidthOnLoad : false,
+                        FullScreenAsMaxWindow : false,
+                        ProgressiveLoading : false,
+                        MinZoomSize : 0.2,
+                        MaxZoomSize : 5,
+                        SearchMatchAll : false,
+                        InitViewMode : 'Portrait',
+                        PrintPaperAsBitmap : false,
+
+                        ViewModeToolsVisible : true,
+                        ZoomToolsVisible : true,
+                        NavToolsVisible : true,
+                        CursorToolsVisible : true,
+                        SearchToolsVisible : true,
+
+                        localeChain: 'en_US'
+                    }
+                }
+            );
+        </script>
+    ";
+    
+    // Return the render data
+    return $content;
 }
+
+/**
+ * Load and pass through the viewer
+ * @param type $type 
+ */
+function islandora_docs_sp_view_swf($type) {
+
+    // Create a file handler to the player
+    $fileHandler = fopen(drupal_get_path('module', 'islandora_docs_sp') . '/viewer/Paper.swf',"r");
+    
+    // Set the header to shockwave
+    header("Content-type: application/x-shockwave-flash");
+    header("Content-Length: " . filesize($fileHandler));    
+    
+    // Psss the binary to the browser
+    fpassthru($fileHandler);
+    exit();
+}
+
 
 
 
