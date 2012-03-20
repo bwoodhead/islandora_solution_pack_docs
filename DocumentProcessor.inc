@@ -19,116 +19,6 @@ class DocumentProcessor {
     }
     
     /**
-     * Convert a document to a pdf
-     * @param type $parameterArray
-     * @param type $dsid
-     * @param type $file
-     * @param type $return_type 
-     */
-    public function createPDFFromDocumentHandler($args=null, $dsid, $file, $return_type) {
-        
-        // Create the pdf
-        $results = $this->convertDocumentToPDF($file);
-
-        // Did the create thumbnail fail
-        if ($results != false) {
-            
-            // Add the file to the session
-            $_SESSION['fedora_ingest_files']["$dsid"] = $results;
-            
-            // Return success 
-            return TRUE;
-        }
-        
-        // Return failed
-        return $results;        
-    }
-    
-    /**
-     * Create a document thumbnail
-     * @param type $args
-     * @param type $dsid
-     * @param type $file
-     * @param type $return_type
-     * @return boolean 
-     */
-    public function createDocumentThumbnailHandler($args, $dsid, $file, $return_type) {
-
-        // Get the parameters
-        $height = $args['height'];
-        $width = $args['width'];
-
-        $results = null;
-        // Check to see if we already have the document
-        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
-            $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        } else {
-            // Create a temp pdf
-            $results = $this->convertDocumentToPDF($file);
-        }
-
-        // Did the create thumbnail fail
-        if ($results != false) {
-
-            // Create the thumbnail
-            $results = $this->createThumbnailFromPDF($results, $width, $height, $dsid, $return_type);
-
-            // Did the create thumbnail fail
-            if ($results != false) {
-            
-                // Add the file to the session
-                $_SESSION['fedora_ingest_files']["$dsid"] = $results;
-            
-                // Return success
-                return TRUE;
-            }
-        }
-        
-        // Return failed
-        return $results;
-    }
-    
-    /**
-     * Create a swf from the document
-     * @param type $args
-     * @param type $dsid
-     * @param type $file
-     * @param type $return_type
-     * @return boolean 
-     */
-    public function createSWFFromDocumentHandler($args, $dsid, $file, $return_type) {
-
-        $results = null;
-        // Check to see if we already have the document
-        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
-            $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        } else {
-            // Create a temp pdf
-            $results = $this->convertDocumentToPDF($file);
-        }
-
-        // Did the create thumbnail fail
-        if ($results != false) {
-
-            // Create the thumbnail
-            $results = $this->createSWFFromPDF($results);
-
-            // Did the create thumbnail fail
-            if ($results != false) {
-            
-                // Add the file to the session
-                $_SESSION['fedora_ingest_files']["$dsid"] = $results;
-            
-                // Return success
-                return TRUE;
-            }
-        }
-        
-        // Return failed
-        return $results;
-    }
-
-    /**
      * Create a PDF thumbnail
      * @param type $parameterArray
      * @param type $dsid
@@ -136,14 +26,14 @@ class DocumentProcessor {
      * @param type $return_type
      * @return type 
      */
-    public function createPDFThumbnailHandler($args=null, $dsid, $file, $return_type) {
+    public function createThumbnailFromPDFHandler($args=null, $dsid, $file, $return_type) {
         
         // Get the parameters
         $height = $args['height'];
         $width = $args['width'];
 
         // Create the thumbnail
-        $results = $this->createThumbnailFromPDF($file, $width, $height, $dsid, $return_type);
+        $results = $this->convertPDFToThumbnail($file, $width, $height, $dsid, $return_type);
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -170,7 +60,7 @@ class DocumentProcessor {
     public function createSWFFromPDFHandler($args=null, $dsid, $file, $return_type) {
         
         // Create the thumbnail
-        $results = $this->createSWFFromPDF($file);
+        $results = $this->convertPDFToSWF($file);
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -184,7 +74,141 @@ class DocumentProcessor {
         
         // Return failed
         return $results;
-    }    
+    }        
+    
+
+    
+    /**
+     * Convert a document to a pdf
+     * @param type $parameterArray
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type 
+     */
+    public function createPDFFromDocumentHandler($args=null, $dsid, $file, $return_type) {
+    
+        // Create the pdf
+        $results = $this->convertDocumentToPDF($file);
+
+        // Did the create thumbnail fail
+        if ($results != false) {
+            
+            // Add the file to the session
+            $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+            
+            // Return success 
+            return TRUE;
+        }
+
+        // Return failed
+        return $results;        
+    }
+    
+    /**
+     * Create a document thumbnail
+     * @param type $args
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type
+     * @return boolean 
+     */
+    public function createDocumentThumbnailHandler($args, $dsid, $file, $return_type) {
+
+        // Get the parameters
+        $height = $args['height'];
+        $width = $args['width'];
+
+        $results = null;
+        
+        // Check to see if we already have the document
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+            
+            // Found previous results
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } else {
+            
+            // Create a temp pdf
+            $results = $this->convertDocumentToPDF($file);
+        }
+
+        // Did the create thumbnail fail
+        if ($results != false) {
+
+            // Create the thumbnail
+            $results = $this->convertPDFToThumbnail($results, $width, $height, $dsid, $return_type);
+
+            // Did the create thumbnail fail
+            if ($results != false) {
+            
+                // Add the file to the session
+                $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+            
+                // Return success
+                return TRUE;
+            }
+            
+            echo("FAILED: createDocumentThumbnailHandler converPDFToThumbnail<br>");
+            // Return failed
+            return $results;
+        }
+        
+        echo("FAILED: createDocumentThumbnailHandler convertPDFToThumbnail<br>");
+        // Return failed
+        return $results;
+    }
+    
+    /**
+     * Create a swf from the document
+     * @param type $args
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type
+     * @return boolean 
+     */
+    public function createSWFFromDocumentHandler($args, $dsid, $file, $return_type) {
+
+        $results = null;
+        
+        // Check to see if we already have the document
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+            
+            // Found previous results
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } 
+        else {
+            
+            // Create a temp pdf
+            $results = $this->convertDocumentToPDF($file);
+        }
+
+        // Did the create thumbnail fail
+        if ($results != false) {
+
+
+            // Create the thumbnail
+            $results = $this->convertPDFToSWF($file);
+
+            // Did the create thumbnail fail
+            if ($results != false) {
+            
+                // Add the file to the session
+                $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+            
+                // Return success
+                return TRUE;
+            }
+
+            echo("FAILED: createSWFFromDocumentHandler convertPDFToSWF<br>");
+            // Return failed
+            return $results;
+            
+        }
+        
+        echo("FAILED: createSWFFromDocumentHandler convertDocumentToPDF<br>");
+        // Return failed
+        return $results;
+    }
+
     
     /******************************************************/
     // Private Helper functions
@@ -215,7 +239,7 @@ class DocumentProcessor {
 
         // Did it succeed 
         if ($return_value !== FALSE) {
-      
+
             // return the new file name
             return $dest_file;
         }
@@ -234,7 +258,7 @@ class DocumentProcessor {
      * @param type $return_type
      * @return boolean 
      */
-    private function createThumbnailFromPDF($file, $width, $height, $dsid, $return_type) {
+    private function convertPDFToThumbnail($file, $width, $height, $dsid, $return_type) {
 
         // Create a file extension
         $file_suffix = '_' . $dsid . '.' . $return_type;
@@ -273,7 +297,12 @@ class DocumentProcessor {
         }
     }
     
-    private function createSWFFromPDF($file) {
+    /**
+     * Create SWF from PDF
+     * @param type $source_file
+     * @return string|boolean 
+     */
+    private function convertPDFToSWF($source_file) {
       
         // Get just the file name without the extension
         $file_name = explode('.', basename($source_file));
@@ -295,7 +324,7 @@ class DocumentProcessor {
             $application = "";
         }
         
-        $cmdline = $application ." ". $file ." -o ". $dest_file ." -T 9 -f";
+        $cmdline = $application ." ". $source_file ." -o ". $dest_file ." -T 9 -f";
 
         // Create the return variables
         $output=array();
@@ -306,7 +335,6 @@ class DocumentProcessor {
 
         // Did it succeed 
         if ($return_value !== FALSE) {
-      
             // return the new file name
             return $dest_file;
         }

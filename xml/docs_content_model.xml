@@ -51,7 +51,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
           method="createSWFFromPDFHandler" modified_files_ext="" module="islandora_docs_sp">
         </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
-          method="createPDFThumbnailHandler" modified_files_ext="jpg" module="islandora_docs_sp">
+          method="createThumbnailFromPDFHandler" modified_files_ext="jpg" module="islandora_docs_sp">
           <parameters>
             <parameter name="width">100</parameter>
             <parameter name="height">120</parameter>
