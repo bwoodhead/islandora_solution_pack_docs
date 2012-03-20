@@ -121,15 +121,15 @@ class DocumentProcessor {
         $results = null;
         
         // Check to see if we already have the document
-        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+        //if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
             
             // Found previous results
-            $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        } else {
+        //    $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        //} else {
             
             // Create a temp pdf
             $results = $this->convertDocumentToPDF($file);
-        }
+        //}
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -170,23 +170,23 @@ class DocumentProcessor {
         $results = null;
         
         // Check to see if we already have the document
-        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+        //if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
             
             // Found previous results
-            $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        } 
-        else {
+        //    $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        //} 
+        //else {
             
             // Create a temp pdf
             $results = $this->convertDocumentToPDF($file);
-        }
+        //}
 
         // Did the create thumbnail fail
         if ($results != false) {
 
 
             // Create the thumbnail
-            $results = $this->convertPDFToSWF($file);
+            $results = $this->convertPDFToSWF($results);
 
             // Did the create thumbnail fail
             if ($results != false) {
@@ -236,7 +236,7 @@ class DocumentProcessor {
 
         // Run the command
         exec($cmdline, $output, $return_value);
-
+        
         // Did it succeed 
         if ($return_value !== FALSE) {
 
@@ -244,7 +244,7 @@ class DocumentProcessor {
             return $dest_file;
         }
         else {
-            
+            echo("convertDocumentToPDF: FAILED!");
             // return failed
             return false;
         }
@@ -277,12 +277,12 @@ class DocumentProcessor {
             $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
         }
 
-        // Create a default error value
+        // Create the return variables
+        $output=array();
         $return_value = TRUE;
-        
-        // Convert the file
-        //var_dump($cmdline);
-        system($cmdline, $return_value);
+
+        // Run the command
+        exec($cmdline, $output, $return_value);
 
         // Did it succeed 
         if ($return_value !== FALSE) {
@@ -292,6 +292,8 @@ class DocumentProcessor {
         }
         else {
             
+            echo("convertPDFToThumbnail: FAILED!");
+
             // return failed
             return false;
         }
@@ -335,10 +337,13 @@ class DocumentProcessor {
 
         // Did it succeed 
         if ($return_value !== FALSE) {
+
             // return the new file name
             return $dest_file;
         }
         else {
+            
+            echo("convertPDFToSWF: FAILED!");
             
             // return failed
             return false;
