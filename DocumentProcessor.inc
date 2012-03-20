@@ -283,20 +283,16 @@ class DocumentProcessor {
         $application = "";
         
         if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
-            echo("microsoft");
             $application = "";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            echo("linux");
-            $application = "/opt/local/bin/pdf2swf  ";
+            $application = "";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-            echo("unix");
-            $application = "/opt/local/bin/pdf2swf  ";
+            $application = "/opt/local/bin/pdf2swf";
         }
         else {
-            echo("Unknown OS");
-            $application = "/opt/local/bin/pdf2swf  ";
+            $application = "";
         }
         
         $cmdline = $application ." ". $file ." -o ". $dest_file ." -T 9 -f";
