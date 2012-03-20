@@ -112,26 +112,34 @@ function islandora_docs_sp_register_services()
     );
 }
 
+/**
+ * PDF endpoint
+ * @param type $pid
+ * @return type 
+ */
 function islandora_docs_sp_pdf_handler($pid) {
 
-    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
-    $object = new Fedora_Item($pid);
-    var_dump($object->get_datastream('OBJ'));
-    return $object->get_datastream('OBJ');
+    module_load_include('inc', 'fedora_repository', 'fedora_respository');
+    return makeObject($pid, 'OBJ');
 }
 
+/**
+ * Thumbnail endpoint
+ * @param type $pid
+ * @return type 
+ */
 function islandora_docs_sp_thumbnail_handler($pid) {
-    
-    // Get fedora item
-    module_load_include('inc', 'fedora_repository', 'api/fedora_item');
 
-    $url = variable_get('fedora_base_url', 'http://localhost:8080/fedora') . "/objects/$pid/datastreams/'TN'/content";
-    $file_contents = do_curl($url); 
-    //http://localhost:8080/fedora/objects/islandora%3A887/datastreams/TN
-    //https://wiki.duraspace.org/display/FEDORA34/REST+API#RESTAPI-getDatastream
+    module_load_include('inc', 'fedora_repository', 'fedora_respository');
+    return makeObject($pid, 'TN');
 }
 
-function islandora_docs_sp_view_handler() {
+/**
+ * Viewer 
+ * @param type $pid
+ */
+function islandora_docs_sp_view_handler($pid) {
+    
 }
 
 
