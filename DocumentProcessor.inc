@@ -317,7 +317,7 @@ class DocumentProcessor {
             $application = "";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            $application = "";
+            $application = "/usr/bin/pdf2swf";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
             $application = "/opt/local/bin/pdf2swf";
