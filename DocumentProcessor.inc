@@ -28,7 +28,7 @@ class DocumentProcessor {
     public function createPDFFromDocumentHandler($args=null, $dsid, $file, $return_type) {
         
         // Create the pdf
-        $results = $this->convertDocumentToPDF($file, $width, $height, $dsid, $return_type);
+        $results = $this->convertDocumentToPDF($file);
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -58,8 +58,14 @@ class DocumentProcessor {
         $height = $args['height'];
         $width = $args['width'];
 
-        // Create a temp pdf
-        $results = $this->convertDocumentToPDF($file, $width, $height, 'pdf', 'pdf');
+        $results = null;
+        // Check to see if we already have the document
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } else {
+            // Create a temp pdf
+            $results = $this->convertDocumentToPDF($file);
+        }
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -81,9 +87,49 @@ class DocumentProcessor {
         // Return failed
         return $results;
     }
+    
+    /**
+     * Create a swf from the document
+     * @param type $args
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type
+     * @return boolean 
+     */
+    public function createSWFFromDocumentHandler($args, $dsid, $file, $return_type) {
+
+        $results = null;
+        // Check to see if we already have the document
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } else {
+            // Create a temp pdf
+            $results = $this->convertDocumentToPDF($file);
+        }
+
+        // Did the create thumbnail fail
+        if ($results != false) {
+
+            // Create the thumbnail
+            $results = $this->createSWFFromPDF($results);
+
+            // Did the create thumbnail fail
+            if ($results != false) {
+            
+                // Add the file to the session
+                $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+            
+                // Return success
+                return TRUE;
+            }
+        }
+        
+        // Return failed
+        return $results;
+    }
 
     /**
-     * Create a pdf thumbnail
+     * Create a PDF thumbnail
      * @param type $parameterArray
      * @param type $dsid
      * @param type $file
@@ -113,6 +159,33 @@ class DocumentProcessor {
         return $results;
     }
     
+    /**
+     * Create a SWF from the pdf
+     * @param type $parameterArray
+     * @param type $dsid
+     * @param type $file
+     * @param type $return_type
+     * @return type 
+     */
+    public function createSWFFromPDFHandler($args=null, $dsid, $file, $return_type) {
+        
+        // Create the thumbnail
+        $results = $this->createSWFFromPDF($file);
+
+        // Did the create thumbnail fail
+        if ($results != false) {
+            
+            // Add the file to the session
+            $_SESSION['fedora_ingest_files']["$dsid"] = $results;
+            
+            // Return success
+            return TRUE;
+        }
+        
+        // Return failed
+        return $results;
+    }    
+    
     /******************************************************/
     // Private Helper functions
     /******************************************************/
@@ -129,32 +202,15 @@ class DocumentProcessor {
         $file_dir = dirname($source_file);
         $dest_file = $file_dir . '/' . $file_name[0] . '.pdf';
 
-        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
-            
-            // Needs fixing
-            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-
-            // Needs fixing
-            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-        }
-        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
-
-            // Needs fixing
-            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-        }
-        else {
-
-            // Needs fixing
-            //$application = '/Applications/LibreOffice.app/Contents/MacOS/soffice ';
-        }
-        $output=array();
-        $return_value = TRUE;
-        
+        // Create the command to execute
         $jobconverter = drupal_get_path('module', 'islandora_docs_sp') . '/lib/jodconverter-cli-2.2.2.jar ';
         $cmdline = '/usr/bin/java -jar ' . $jobconverter . ' ' . $source_file . ' ' . $dest_file;
         
+        // Create the return variables
+        $output=array();
+        $return_value = TRUE;
+
+        // Run the command
         exec($cmdline, $output, $return_value);
 
         // Did it succeed 
@@ -209,6 +265,54 @@ class DocumentProcessor {
       
             // return the new file name
             return $file . $file_suffix;
+        }
+        else {
+            
+            // return failed
+            return false;
+        }
+    }
+    
+    private function createSWFFromPDF($file) {
+      
+        // Get just the file name without the extension
+        $file_name = explode('.', basename($source_file));
+        $file_dir = dirname($source_file);
+        $dest_file = $file_dir . '/' . $file_name[0] . '.swf';
+
+        $application = "";
+        
+        if (stristr($_SERVER['SERVER_SOFTWARE'], 'microsoft')) {
+            echo("microsoft");
+            $application = "";
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
+            echo("linux");
+            $application = "/opt/local/bin/pdf2swf  ";
+        }
+        elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
+            echo("unix");
+            $application = "/opt/local/bin/pdf2swf  ";
+        }
+        else {
+            echo("Unknown OS");
+            $application = "/opt/local/bin/pdf2swf  ";
+        }
+        
+        $cmdline = $application ." ". $file ." -o ". $dest_file ." -T 9 -f";
+
+        // Create the return variables
+        $output=array();
+        $return_value = TRUE;
+
+        // Run the command
+        exec($cmdline, $output, $return_value);
+
+        // Did it succeed 
+        if ($return_value !== FALSE) {
+      
+            // return the new file name
+            return $dest_file;
         }
         else {
             

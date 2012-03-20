@@ -54,6 +54,9 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
             <parameter name="height">120</parameter>
           </parameters>
         </ingest_method>
+        <ingest_method class="DocumentProcessor" dsid="SWF" file="DocumentProcessor.inc"
+          method="createSWFFromPDFHandler" modified_files_ext="" module="islandora_docs_sp">
+        </ingest_method>
       </ingest_methods>
     </rule>
     <rule>
@@ -72,6 +75,9 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
             <parameter name="width">100</parameter>
             <parameter name="height">120</parameter>
           </parameters>
+        </ingest_method>
+        <ingest_method class="DocumentProcessor" dsid="SWF" file="DocumentProcessor.inc"
+          method="createSWFFromDocumentHandler" modified_files_ext="" module="islandora_docs_sp">
         </ingest_method>
       </ingest_methods>
     </rule>

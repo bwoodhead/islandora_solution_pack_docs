@@ -100,6 +100,14 @@ function islandora_docs_sp_register_services()
                 'render_drupal' => false, 
                 'example' => 'thumbnail/{pid}'
             ),
+            'swf' => array (
+                'title' => 'SWF',
+                'function' => 'swf_handler',
+                'param_count' => 1,
+                'security' => array('access content'),
+                'render_drupal' => false, 
+                'example' => 'swf/{pid}'
+            ),
             'view' => array (
                 'title' => 'PDF Viewer',
                 'function' => 'view_handler',
@@ -143,6 +151,17 @@ function islandora_docs_sp_thumbnail_handler($pid) {
 }
 
 /**
+ * Thumbnail endpoint
+ * @param type $pid
+ * @return type 
+ */
+function islandora_docs_sp_swf($pid) {
+
+    module_load_include('inc', 'fedora_repository', 'fedora_respository');
+    return makeObject($pid, 'SWF');
+}
+
+/**
  * Viewer 
  * @param type $pid
  */
@@ -162,7 +181,6 @@ function islandora_docs_sp_view_handler($pid) {
                 'viewerPlaceHolder', { 
                     config : {
                         SwfFile : '". $base_url . '/islandora_services/islandora_docs_sp/viewer' ."',
-                        PDFFile : '". $base_url . '/islandora_services/islandora_docs_sp/pdf/' . $pid ."', 
                         Scale : 0.6, 
                         ZoomTransition : 'easeOut',
                         ZoomTime : 0.5,
