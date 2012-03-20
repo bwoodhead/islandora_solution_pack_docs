@@ -39,6 +39,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     <type>application/pdf</type>
     <type>application/msword</type>
     <type>application/vnd.oasis.opendocument.text</type>
+    <type>application/vnd.openxmlformats-officedocument.wordprocessingml.document</type>
   </mimetypes>
   <ingest_rules>
     <rule>
@@ -62,6 +63,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     <rule>
       <applies_to>application/msword</applies_to>
       <applies_to>application/vnd.oasis.opendocument.text</applies_to>
+      <applies_to>application/vnd.openxmlformats-officedocument.wordprocessingml.document</applies_to>
       <ingest_methods>
         <ingest_method class="DocumentProcessor" dsid="ORG" file="DocumentProcessor.inc"
           method="preserveOriginalDocument" modified_files_ext="" module="islandora_docs_sp">
