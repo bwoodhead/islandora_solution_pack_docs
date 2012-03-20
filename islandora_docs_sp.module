@@ -153,41 +153,9 @@ function islandora_docs_sp_view_handler($pid) {
     
     // Get drupals base url
     global $base_url;
-    
-    // Create an element to render content too
-    $content = "
-        <script type=\"text/javascript\"> 
-            var fp = new FlexPaperViewer(	
-                'FlexPaperViewer',
-                'viewerPlaceHolder', { 
-                    config : {
-                        SwfFile : escape('". $base_url . '/islandora_services/islandora_docs_sp/viewer' ."'),
-                        Scale : 0.6, 
-                        ZoomTransition : 'easeOut',
-                        ZoomTime : 0.5,
-                        ZoomInterval : 0.2,
-                        FitPageOnLoad : true,
-                        FitWidthOnLoad : false,
-                        FullScreenAsMaxWindow : false,
-                        ProgressiveLoading : false,
-                        MinZoomSize : 0.2,
-                        MaxZoomSize : 5,
-                        SearchMatchAll : false,
-                        InitViewMode : 'Portrait',
-                        PrintPaperAsBitmap : false,
 
-                        ViewModeToolsVisible : true,
-                        ZoomToolsVisible : true,
-                        NavToolsVisible : true,
-                        CursorToolsVisible : true,
-                        SearchToolsVisible : true,
-
-                        localeChain: 'en_US'
-                    }
-                }
-            );
-        </script>
-    ";
+    $doc = $base_url . '/islandora_services/islandora_docs_sp/pdf/' . $pid;
+    $content = '<iframe src="http://docs.google.com/viewer?url='.$doc.'&embedded=true" width="600" height="780" style="border: none;"></iframe>';
     
     // Return the render data
     return $content;
@@ -197,10 +165,11 @@ function islandora_docs_sp_view_handler($pid) {
  * Load and pass through the viewer
  * @param type $type 
  */
+/*
 function islandora_docs_sp_view_swf($type) {
 
     // Create a file handler to the player
-    $fileHandler = fopen(drupal_get_path('module', 'islandora_docs_sp') . '/viewer/Paper.swf',"r");
+    $fileHandler = fopen(drupal_get_path('module', 'islandora_docs_sp') . '/viewer/FlexPaperViewer.swf',"r");
     
     // Set the header to shockwave
     header("Content-type: application/x-shockwave-flash");
@@ -210,7 +179,7 @@ function islandora_docs_sp_view_swf($type) {
     fpassthru($fileHandler);
     exit();
 }
-
+*/
 
 
 
