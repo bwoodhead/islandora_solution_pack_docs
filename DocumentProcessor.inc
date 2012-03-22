@@ -267,14 +267,14 @@ class DocumentProcessor {
       
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'linux')) {
-            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
+            $cmdline = "/usr/local/bin/convert \"$file\"\[0\] -flatten -colorspace RGB -thumbnail $width" . "x$height \"$file$file_suffix\"";
         }
         elseif (stristr($_SERVER['SERVER_SOFTWARE'], 'unix')) {
             // Use this for Mac OS X (MAMP)
             $cmdline = "sips -s format jpeg \"$file\" -z $height $height --out \"$file$file_suffix\" >/dev/null";
         }
         else {
-            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
+            $cmdline = "convert \"$file\"\[0\] -colorspace RGB -flatten -thumbnail " . $width . "x" . $height . " \"$file$file_suffix\"";
         }
 
         // Create the return variables
