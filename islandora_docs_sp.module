@@ -81,84 +81,57 @@ function islandora_docs_sp_required_fedora_objects() {
  */
 function islandora_docs_sp_register_services()
 {
+    // Load the service types
+    //module_load_include('inc', 'islandora_services', 'ServiceTypes');
+    
     // Define the end points
     return array(
         'islandora_docs_sp' => array (
+            // Load a pdf from fedora
             'pdf' => array (
                 'title' => 'PDF', 
-                'function' => 'pdf_handler', 
-                'param_count' => 1, 
+                'datastream' => 'OBJ',
+                'cache' => true,
                 'security' => array('access content'),
-                'render_drupal' => false, 
-                'example' => 'pdf/{pid}',
+                'example' => '/pdf/{pid}',
             ),
+            // Load a thumbnail from fedora
             'thumbnail' => array (
                 'title' => 'Thumbnail',
-                'function' => 'thumbnail_handler',
-                'param_count' => 1,
+                'datastream' => 'TN',
                 'security' => array('access content'),
-                'render_drupal' => false, 
-                'example' => 'thumbnail/{pid}'
+                'cache' => true,
+                'example' => '/thumbnail/{pid}'
             ),
+            // Load a swf from fedora
             'swf' => array (
                 'title' => 'SWF',
-                'function' => 'swf_handler',
-                'param_count' => 1,
+                'datastream' => 'SWF',
                 'security' => array('access content'),
-                'render_drupal' => false, 
-                'example' => 'swf/{pid}'
+                'cache' => true,
+                'example' => '/swf/{pid}'
             ),
+            // Pass the swf viewer to the client
+            'viewer' => array (
+                'title' => 'Flexpaper Viewer',
+                'file' => '/viewer/FlexPaperViewer.swf',
+                'security' => array('access content'),
+                'cache' => true,
+                'example' => '/viewer',
+            ),
+            // Call view handler with a parameter
             'view' => array (
-                'title' => 'PDF Viewer',
+                'title' => 'View PDF',
                 'function' => 'view_handler',
                 'param_count' => 1,
                 'security' => array('access content'),
-                'render_drupal' => true,
-                'example' => 'view/{pid}'
-            ),
-            'viewer' => array (
-                'title' => 'Flexpaper',
-                'function' => 'view_swf',
-                'param_count' => 0,
-                'security' => array('access content'),
-                'render_drupal' => false,
-                'example' => 'viewer',
+                'standalone' => false,
+                'format' => ServiceTypes::HTML,
+                'cache' => true,
+                'example' => '/view/{pid}'
             ),
         )
     );
-}
-
-/**
- * PDF endpoint
- * @param type $pid
- * @return type 
- */
-function islandora_docs_sp_pdf_handler($pid) {
-
-    module_load_include('inc', 'fedora_repository', 'fedora_respository');
-    return makeObject($pid, 'OBJ');
-}
-
-/**
- * Thumbnail endpoint
- * @param type $pid
- * @return type 
- */
-function islandora_docs_sp_thumbnail_handler($pid) {
-
-    module_load_include('inc', 'fedora_repository', 'fedora_respository');
-    return makeObject($pid, 'TN');
-}
-
-/**
- * Thumbnail endpoint
- * @param type $pid
- * @return type 
- */
-function islandora_docs_sp_swf($pid) {
-
-    module_load_include('inc', 'fedora_repository', 'fedora_respository');
-    return makeObject($pid, 'SWF');
 }
 
 /**
@@ -212,23 +185,6 @@ function islandora_docs_sp_view_handler($pid) {
     return $content;
 }
 
-/**
- * Load and pass through the viewer
- * @param type $type 
- */
-function islandora_docs_sp_view_swf($type) {
-
-    // Create a file handler to the player
-    $fileHandler = fopen(drupal_get_path('module', 'islandora_docs_sp') . '/viewer/FlexPaperViewer.swf',"r");
-    
-    // Set the header to shockwave
-    header("Content-type: application/x-shockwave-flash");
-    header("Content-Length: " . filesize($fileHandler));    
-    
-    // Psss the binary to the browser
-    fpassthru($fileHandler);
-    exit();
-}
 
 
 
