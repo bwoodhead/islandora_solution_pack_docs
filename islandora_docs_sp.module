@@ -42,36 +42,36 @@ function islandora_docs_sp_required_fedora_objects() {
     solution_pack_add_form_association($content_model, $form_name);
 
     return array(
-    $module_name => array(
-      'module' => $module_name,
-      'title' => $module_title,
-      'objects' => array(
-        array(
-          'pid' => $content_model,
-          'label' => $content_model_label,
-          'dsid' => 'ISLANDORACM',
-          'datastream_file' => $content_model_file,
-          'cmodel' => 'fedora-system:ContentModel-3.0',
-        ),
-        array(
-          'pid' => $collection,
-          'label' => $collection_label,
-          'cmodel' => 'islandora:collectionCModel',
-          'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
-          'datastreams' => array(
+        $module_name => array(
+        'module' => $module_name,
+        'title' => $module_title,
+        'objects' => array(
             array(
-              'dsid' => 'TN',
-              'datastream_file' => $collection_thumbnail_file,
-              'mimetype' => $collection_thumbnail_mimetype,
+                'pid' => $content_model,
+                'label' => $content_model_label,
+                'dsid' => 'ISLANDORACM',
+                'datastream_file' => $content_model_file,
+                'cmodel' => 'fedora-system:ContentModel-3.0',
             ),
             array(
-              'dsid' => 'COLLECTION_POLICY',
-              'datastream_file' => $collection_file,
+                'pid' => $collection,
+                'label' => $collection_label,
+                'cmodel' => 'islandora:collectionCModel',
+                'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+                'datastreams' => array(
+                    array(
+                        'dsid' => 'TN',
+                        'datastream_file' => $collection_thumbnail_file,
+                        'mimetype' => $collection_thumbnail_mimetype,
+                    ),
+                    array(
+                        'dsid' => 'COLLECTION_POLICY',
+                        'datastream_file' => $collection_file,
+                    ),
+                ),
             ),
-          ),
         ),
-      ),
-    ),
+     ),
   );
 }
 
@@ -82,7 +82,7 @@ function islandora_docs_sp_required_fedora_objects() {
 function islandora_docs_sp_register_services()
 {
     // Load the service types
-    //module_load_include('inc', 'islandora_services', 'ServiceTypes');
+    module_load_include('inc', 'islandora_services', 'ServiceTypes');
     
     // Define the end points
     return array(
