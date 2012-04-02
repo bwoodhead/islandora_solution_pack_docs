@@ -49,7 +49,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
           method="preserveOriginalDocument" modified_files_ext="" module="islandora_docs_sp">
         </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="SWF" file="DocumentProcessor.inc"
-          method="createSWFFromPDFHandler" modified_files_ext="" module="islandora_docs_sp">
+          method="createSWFFromPDFHandler" modified_files_ext="swf" module="islandora_docs_sp">
         </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
           method="createThumbnailFromPDFHandler" modified_files_ext="jpg" module="islandora_docs_sp">
@@ -72,7 +72,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
           method="createPDFFromDocumentHandler" modified_files_ext="pdf" module="islandora_docs_sp">
         </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="SWF" file="DocumentProcessor.inc"
-          method="createSWFFromDocumentHandler" modified_files_ext="" module="islandora_docs_sp">
+          method="createSWFFromDocumentHandler" modified_files_ext="swf" module="islandora_docs_sp">
         </ingest_method>
         <ingest_method class="DocumentProcessor" dsid="TN" file="DocumentProcessor.inc"
           method="createDocumentThumbnailHandler" modified_files_ext="jpg" module="islandora_docs_sp">
