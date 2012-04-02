@@ -121,15 +121,15 @@ class DocumentProcessor {
         $results = null;
         
         // Check to see if we already have the document
-        //if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
             
             // Found previous results
-        //    $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        //} else {
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } else {
             
             // Create a temp pdf
             $results = $this->convertDocumentToPDF($file);
-        //}
+        }
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -147,12 +147,10 @@ class DocumentProcessor {
                 return TRUE;
             }
             
-            echo("FAILED: createDocumentThumbnailHandler converPDFToThumbnail<br>");
             // Return failed
             return $results;
         }
         
-        echo("FAILED: createDocumentThumbnailHandler convertPDFToThumbnail<br>");
         // Return failed
         return $results;
     }
@@ -170,16 +168,16 @@ class DocumentProcessor {
         $results = null;
         
         // Check to see if we already have the document
-        //if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
+        if ( isset($_SESSION['fedora_ingest_files']["OBJ"]) ) {
             
             // Found previous results
-        //    $results = $_SESSION['fedora_ingest_files']["OBJ"];
-        //} 
-        //else {
+            $results = $_SESSION['fedora_ingest_files']["OBJ"];
+        } 
+        else {
             
             // Create a temp pdf
             $results = $this->convertDocumentToPDF($file);
-        //}
+        }
 
         // Did the create thumbnail fail
         if ($results != false) {
@@ -198,13 +196,11 @@ class DocumentProcessor {
                 return TRUE;
             }
 
-            echo("FAILED: createSWFFromDocumentHandler convertPDFToSWF<br>");
             // Return failed
             return $results;
             
         }
         
-        echo("FAILED: createSWFFromDocumentHandler convertDocumentToPDF<br>");
         // Return failed
         return $results;
     }
@@ -244,7 +240,6 @@ class DocumentProcessor {
             return $dest_file;
         }
         else {
-            echo("convertDocumentToPDF: FAILED!");
             // return failed
             return false;
         }
@@ -292,8 +287,6 @@ class DocumentProcessor {
         }
         else {
             
-            echo("convertPDFToThumbnail: FAILED!");
-
             // return failed
             return false;
         }
@@ -343,12 +336,8 @@ class DocumentProcessor {
         }
         else {
             
-            echo("convertPDFToSWF: FAILED!");
-            
             // return failed
             return false;
         }
     }
 }   
-
-?>
